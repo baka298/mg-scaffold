@@ -27,14 +27,6 @@ class ScaffoldCustomPluginCommand {
 	 * * `.gitignore` tells which files (or patterns) git should ignore.
 	 * * `.distignore` tells which files and folders should be ignored in distribution.
 	 *
-	 * The following folders are always created:
-	 *
-	 * * `assets/js`
-	 * * `assets/css`
-	 * * `assets/images`
-	 * * `inc/classes`
-	 * * `inc/functions`
-	 *
 	 * The following files are also included unless the `--skip-tests` is used:
 	 *
 	 * * `phpunit.xml.dist` is the configuration file for PHPUnit.
@@ -110,14 +102,43 @@ class ScaffoldCustomPluginCommand {
 			$plugin_dir = WP_PLUGIN_DIR . "/$plugin_slug";
 		}
 		$this->create_directories( array(
-			"{$plugin_dir}/assets",
-			"{$plugin_dir}/assets/js",
-			"{$plugin_dir}/assets/css",
-			"{$plugin_dir}/assets/images",
-			"{$plugin_dir}/inc/",
-			"{$plugin_dir}/inc/classes",
-			"{$plugin_dir}/inc/functions",
-		) );
+            "{$plugin_dir}/App",
+            "{$plugin_dir}/App/Database",
+            "{$plugin_dir}/App/Database/Migrations",
+            "{$plugin_dir}/App/Features",
+            "{$plugin_dir}/App/Http",
+            "{$plugin_dir}/App/Http/Controllers",
+            "{$plugin_dir}/App/Http/Middlewares",
+            "{$plugin_dir}/App/Http/Models",
+            "{$plugin_dir}/App/Http/Requests",
+            "{$plugin_dir}/App/Providers",
+            "{$plugin_dir}/config",
+            "{$plugin_dir}/resources",
+            "{$plugin_dir}/resources/views",
+            "{$plugin_dir}/resources/assets",
+            "{$plugin_dir}/resources/assets/css",
+            "{$plugin_dir}/resources/assets/js",
+            "{$plugin_dir}/routes",
+
+        ) );
+        
+        $this->create_files( array(
+            "{$plugin_dir}/App/Setup.php",
+            "{$plugin_dir}/App/Database/Database.php",
+            "{$plugin_dir}/App/Http/Requests/Request.php",
+            "{$plugin_dir}/App/Providers/FeaturesProvider.php",
+            "{$plugin_dir}/App/Providers/HooksProvider.php",
+            "{$plugin_dir}/App/Providers/RoutesProvider.php",
+            "{$plugin_dir}/App/Providers/ServicesProvider.php",
+            "{$plugin_dir}/config/features.php",
+            "{$plugin_dir}/config/hooks.php",
+            "{$plugin_dir}/config/providers.php",
+            "{$plugin_dir}/routes/action.php",
+            "{$plugin_dir}/autoload.php",
+            "{$plugin_dir}/bootstrap.php",
+            "{$plugin_dir}/env.php",
+            "{$plugin_dir}/helpers.php",
+        ));
 	}
 	/**
 	 * Creates directories.
@@ -130,7 +151,14 @@ class ScaffoldCustomPluginCommand {
 				Process::create( Utils\esc_cmd( 'mkdir -p %s', $directory ) )->run();
 			}
 		}
-	}
+    }
+    private function create_files( $files) {
+        foreach ($files as $file){
+            if(! is_file($file)){
+                Process::create( Utils\esc_cmd( 'touch %s', $file ) )->run();
+            }
+        }
+    }
 }
 $custom_plugin_cli = new ScaffoldCustomPluginCommand();
-WP_CLI::add_command( 'scaffold custom_plugin', array( $custom_plugin_cli, 'custom_plugin' ) );
+WP_CLI::add_command( 'scaffold mg_plugin', array( $custom_plugin_cli, 'mg_plugin' ) );
